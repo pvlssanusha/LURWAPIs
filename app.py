@@ -97,7 +97,6 @@ def get_response():
 def get_course_content():
     try:
         modulename = request.get_json().get('modulename')
-
         payload = {
             "contents": [
                 {
@@ -145,13 +144,14 @@ def get_course_content():
 def get_easylevel_content():
     try:
         topic = request.get_json().get('submodulename')
+        description=request.get_json().get('description')
         payload = {
             "contents": [
                 {
                     "parts": [
                         {
                             "text": f'''
-                                "This is the topic {topic} and also its content{content}.Please regenerate the  content in such  a way that a child could understand in simple language.Keep the response fitting with atleast 400 words"
+                                "This is the topic {topic} and also its content{description}.Please regenerate the  content in such  a way that a child could understand in simple language.Keep the response fitting with atleast 400 words"
                                 Give the output in json format as code block:
                                 {{
                                     "easylevel":"string"
@@ -191,13 +191,14 @@ def get_easylevel_content():
 def get_mediumlevel_content():
     try:
         topic = request.get_json().get('submodulename')
+        description=request.get_json().get('description')
         payload = {
             "contents": [
                 {
                     "parts": [
                         {
                             "text": f'''
-                                "This is the  topic {topic} and also its content{content},regenerate the content covering key concepts and principles."
+                                "This is the  topic {topic} and also its content {description},regenerate the content covering key concepts and principles."
 "Describe content with moderate complexity, suitable for a high school student.Keep the response fitting with atleast 400 words"
                                 Give the output in json format as code block:
                                 {{
@@ -238,13 +239,14 @@ def get_mediumlevel_content():
 def get_hardlevel_content():
     try:
         topic = request.get_json().get('submodulename')
+        description=request.get_json().get('description')
         payload = {
             "contents": [
                 {
                     "parts": [
                         {
                             "text": f'''
-                                "This is the topic {topic} and its content {content}, regenerate the content by covering intricate details, applications. Keep the response concise but comprehensive, fitting with atleasst 400 words"
+                                "This is the topic {topic} and its content {description}, regenerate the content by covering intricate details, applications. Keep the response concise but comprehensive, fitting with atleasst 400 words"
                                 Give the output in json format as code block:
                                 {{
                                     "hardlevel":"string"
