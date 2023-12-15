@@ -1,0 +1,285 @@
+from flask import Flask, request, jsonify
+import os
+import requests
+import json
+from dotenv import load_dotenv
+load_dotenv()
+
+app = Flask(__name__)
+
+# Replace 'YOUR_COHERE_API_KEY' with your Cohere API key
+
+# Initialize the Cohere Client with an API Key
+api = os.getenv("GEMINI_API_KEY")
+api_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + api
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
+
+@app.route('/', methods=['POST'])
+def get_response():
+    try:
+        course = request.get_json().get('course')
+        target = request.get_json().get('target')
+        duration = request.get_json().get('duration')
+        # module = request.get_json().get('module')
+        # submodules = request.get_json().get('submodules')
+        
+        # submodules = " , ".join(submodules)
+            # Define the request payload
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": 
+                            f'''
+        I want to create a {course} course for {target} which has a duration of {duration}.
+            Can you create a table of contents for it?
+            Give the output in json format as code block:
+            {{
+                "courseTitle": "string",
+                "courseDescription": "string",
+                "courseObjective": ["strings"],
+                "courseTags": ["strings"],
+                "courseStructure": [
+                    {{  
+                        "moduleName": "string",
+                        "subModules": ["strings"],
+                        "quiz": "string"
+                    }},
+                    {{
+                        "modulename": "string",
+                        "submodules": ["strings"],
+                        "quiz": "string"
+                    }}
+                ]
+            }}
+            where quiz should only be generated for whole module and not submodules, also give quiz description for each module. The quiz description should cover the concepts of all the submodules present in that module
+        '''
+                        }
+                    ]
+                }
+            ]
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Make the API call
+        response = requests.post(api_url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            # Parse and print the response JSON
+            response_json = response.json()
+            #print(response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3])
+            return (response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3])
+            # print(json.dumps(response_json, indent=2))
+            # print(response_json)
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            return json.dump(
+            {
+                "msg":"Error Assessing AI"
+            }
+            ) 
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+# ... (your existing code)
+
+@app.route('/module', methods=['POST'])
+def get_course_content():
+    try:
+        modulename = request.get_json().get('modulename')
+
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": f'''
+                                I want {modulename} content in 200 words covering almost all the contents in the {modulename}.
+                                Can you create a table of contents for it?
+                                Give the output in json format as code block:
+                                {{
+                                    "content": "string"
+                                }}
+                            '''
+                        }
+                    ]
+                }
+            ]
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Make the API call
+        response = requests.post(api_url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            # Parse and print the response JSON
+            response_json = response.json()
+            content = response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3]
+            return jsonify({"content": content})
+        
+        
+            
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            return json.dumps({"msg": "Error assessing AI"})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+@app.route('/easylevel', methods=['POST'])
+def get_easylevel_content():
+    try:
+        topic = request.get_json().get('submodulename')
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": f'''
+                                "Please provide a simple explanation of {topic}.Explain {topic} in a way that a child could understand.Keep the response fitting with atleast 400 words"
+                                Give the output in json format as code block:
+                                {{
+                                    "easylevel":"string"
+                                }}
+                            '''
+                        }
+                    ]
+                }
+            ]
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Make the API call
+        response = requests.post(api_url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            # Parse and print the response JSON
+            response_json = response.json()
+            content = response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3]
+            return jsonify({"content": content})
+        
+        
+            
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            return json.dumps({"msg": "Error assessing AI"})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
+@app.route('/mediumlevel', methods=['POST'])
+def get_mediumlevel_content():
+    try:
+        topic = request.get_json().get('submodulename')
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": f'''
+                                "Give a detailed overview of {topic}, covering key concepts and principles."
+"Describe {topic} with moderate complexity, suitable for a high school student.Keep the response fitting with atleast 400 words"
+                                Give the output in json format as code block:
+                                {{
+                                    "medium":"string"
+                                }}
+                            '''
+                        }
+                    ]
+                }
+            ]
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Make the API call
+        response = requests.post(api_url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            # Parse and print the response JSON
+            response_json = response.json()
+            content = response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3]
+            return jsonify({"content": content})
+        
+        
+            
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            return json.dumps({"msg": "Error assessing AI"})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+@app.route('/hardlevel', methods=['POST'])
+def get_hardlevel_content():
+    try:
+        topic = request.get_json().get('submodulename')
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": f'''
+                                "Provide an advanced exploration of {topic}, covering intricate details, applications, and any recent developments. Keep the response concise but comprehensive, fitting with atleasst 400 words"
+                                Give the output in json format as code block:
+                                {{
+                                    "hardlevel":"string"
+                                }}
+                            '''
+                        }
+                    ]
+                }
+            ]
+        }
+
+        # Set the headers
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Make the API call
+        response = requests.post(api_url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            # Parse and print the response JSON
+            response_json = response.json()
+            content = response_json["candidates"][0]["content"]["parts"][0]["text"][7:-3]
+            return jsonify({"content": content})
+        
+        
+            
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            return json.dumps({"msg": "Error assessing AI"})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
