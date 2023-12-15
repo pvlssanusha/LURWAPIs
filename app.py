@@ -151,7 +151,7 @@ def get_easylevel_content():
                     "parts": [
                         {
                             "text": f'''
-                                "Please provide a simple explanation of {topic}.Explain {topic} in a way that a child could understand.Keep the response fitting with atleast 400 words"
+                                "This is the topic {topic} and also its content{content}.Please regenerate the  content in such  a way that a child could understand in simple language.Keep the response fitting with atleast 400 words"
                                 Give the output in json format as code block:
                                 {{
                                     "easylevel":"string"
@@ -197,8 +197,8 @@ def get_mediumlevel_content():
                     "parts": [
                         {
                             "text": f'''
-                                "Give a detailed overview of {topic}, covering key concepts and principles."
-"Describe {topic} with moderate complexity, suitable for a high school student.Keep the response fitting with atleast 400 words"
+                                "This is the  topic {topic} and also its content{content},regenerate the content covering key concepts and principles."
+"Describe content with moderate complexity, suitable for a high school student.Keep the response fitting with atleast 400 words"
                                 Give the output in json format as code block:
                                 {{
                                     "medium":"string"
@@ -244,7 +244,7 @@ def get_hardlevel_content():
                     "parts": [
                         {
                             "text": f'''
-                                "Provide an advanced exploration of {topic}, covering intricate details, applications, and any recent developments. Keep the response concise but comprehensive, fitting with atleasst 400 words"
+                                "This is the topic {topic} and its content {content}, regenerate the content by covering intricate details, applications. Keep the response concise but comprehensive, fitting with atleasst 400 words"
                                 Give the output in json format as code block:
                                 {{
                                     "hardlevel":"string"
